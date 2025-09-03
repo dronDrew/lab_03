@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('checkout') {
             steps {
-              checkout scmGit(branches: [[name: 'main']], browser: github('https://github.com/dronDrew/lab_03'), extensions: [cleanBeforeCheckout(deleteUntrackedNestedRepositories: true)], userRemoteConfigs: [[credentialsId: 'PAT',url: 'https://github.com/dronDrew/lab_03']])
+              checkout scmGit(branches: [[name: '*/master']], browser: github('https://github.com/dronDrew/lab_03'), extensions: [localBranch("${env.BRANCH_NAME}")],  userRemoteConfigs: [[credentialsId: 'PAT',url: 'https://github.com/dronDrew/lab_03']])
             }
         }
         stage('build') {
