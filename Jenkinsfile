@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('checkout') {
             steps {
-              checkout scm
+              checkout scmGit(branches: [[name: '${env.BRANCH_NAME}']], browser: github('https://github.com/dronDrew/lab_03'), extensions: [], userRemoteConfigs: [[url: 'https://github.com/dronDrew/lab_03']])
             }
         }
         stage('build') {
