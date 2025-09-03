@@ -13,6 +13,7 @@ pipeline {
         }
         stage('build') {
             steps {
+                sh 'ls -al'
                 sh './scripts/build.sh'
             }
         }
