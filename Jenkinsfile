@@ -11,9 +11,11 @@ pipeline {
        
         stage('build') {
             steps {
-                sh 'node --version'
+              nodejs(cacheLocationStrategy: workspace(), nodeJSInstallationName: 'node') {
+    		sh 'node --version'
                 sh 'chmod +x ./scripts/build.sh'
                 sh './scripts/build.sh'
+		}
             }
         }
         stage('test') {
