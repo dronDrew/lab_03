@@ -20,7 +20,12 @@ pipeline {
         }
         stage('test') {
             steps {
+                nodejs(cacheLocationStrategy: workspace(), nodeJSInstallationName: 'node') {
+    		sh 'node --version'
+                sh 'chmod +x ./scripts/build.sh'
                 sh './scripts/test.sh'
+			}
+            	} 
             }
         }
         stage('build docker image') {
