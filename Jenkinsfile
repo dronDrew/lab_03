@@ -2,9 +2,6 @@
 
 pipeline {
     agent any
-    tools {
-        nodejs 'Node7.8.0' // Reference the Node.js installation by name
-    }
     stages {
         stage('checkout') {
             steps {
@@ -14,6 +11,7 @@ pipeline {
        
         stage('build') {
             steps {
+                sh 'node --version'
                 sh 'chmod +x ./scripts/build.sh'
                 sh './scripts/build.sh'
             }
