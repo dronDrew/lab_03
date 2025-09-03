@@ -6,14 +6,29 @@ pipeline {
         CI = 'true'
     }
     stages {
-        stage('Build') {
+        stage('checkout') {
             steps {
-                sh 'npm install'
+              checkout scm
             }
         }
-        stage('Test') {
+        stage('build') {
             steps {
-                sh './jenkins/scripts/test.sh'
+                sh './scripts/build.sh'
+            }
+        }
+        stage('test') {
+            steps {
+                sh './scripts/test.sh'
+            }
+        }
+        stage('build docker image') {
+            steps {
+               def customImage = docker.build("my-image:${env.BUILD_ID}")
+            }
+        }
+        stage('deploy') {
+            steps {
+                echo 'deploy'
             }
         }
     }
