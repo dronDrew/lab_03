@@ -2,8 +2,8 @@
 
 pipeline {
     agent any
-    environment {
-        CI = 'true'
+    tools {
+        nodejs 'Node7.8.0' // Reference the Node.js installation by name
     }
     stages {
         stage('checkout') {
@@ -11,6 +11,7 @@ pipeline {
               checkout scmGit(branches: [[name: "${env.BRANCH_NAME}"]], browser: github('https://github.com/dronDrew/lab_03'), extensions: [localBranch("${env.BRANCH_NAME}")],  userRemoteConfigs: [[credentialsId: 'PAT',url: 'https://github.com/dronDrew/lab_03']])
             }
         }
+       
         stage('build') {
             steps {
                 sh 'chmod +x ./scripts/build.sh'
