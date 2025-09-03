@@ -23,7 +23,7 @@ pipeline {
         }
         stage('build docker image') {
             steps {
-               docker.build("my-image:${env.BUILD_ID}")
+               echo "build image"
             }
         }
         stage('deploy') {
