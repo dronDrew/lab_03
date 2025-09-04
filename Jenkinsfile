@@ -52,7 +52,7 @@ pipeline {
                         sh "docker container stop ${containerName} || true"
                         sh "docker container rm -f ${containerName}"
                     }
-                    if (CUR_BRANCH == main) {
+                    if (CUR_BRANCH == 'main') {
                         sh "docker run -d --name ${containerName} -p 3000:3000 node${CUR_BRANCH}:${TAG}"
                     } else {
                         sh "docker run -d --name ${containerName} -p 3001:3000 node${CUR_BRANCH}:${TAG}"
