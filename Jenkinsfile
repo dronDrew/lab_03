@@ -54,8 +54,8 @@ pipeline {
             steps {
                 script {
 			withDockerRegistry(credentialsId: 'DOCKER_HUB', url: '') {
-			sh "docker tag node${CUR_BRANCH}:${TAG} andrdud/reposiroty_use:${TAG}"
-			sh "docker push andrdud/reposiroty_use:${TAG}"
+			sh "docker tag node${CUR_BRANCH}:${TAG} andrdud/node${CUR_BRANCH}:${TAG}"
+			sh "docker push andrdud/node${CUR_BRANCH}:${TAG}"
 			}
                 }
             }
@@ -75,12 +75,12 @@ pipeline {
                         }
                         
                         if (CUR_BRANCH == 'main') {
-                            withDockerRegistry(credentialsId: 'DOCKER_HUB', url: 'https://app.docker.com/') {
-			sh "docker run -d --name ${containerName} -p 3000:3000 node${CUR_BRANCH}:${TAG}"}
+                            withDockerRegistry(credentialsId: 'DOCKER_HUB', url: '') {
+			sh "docker run -d --name ${containerName} -p 3000:3000 andrdud/node${CUR_BRANCH}:${TAG}"}
                             
                         } else {
-                             withDockerRegistry(credentialsId: 'DOCKER_HUB', url: 'https://app.docker.com/') {
-			sh "docker run -d --name ${containerName} -p 3001:3000 node${CUR_BRANCH}:${TAG}"}
+                             withDockerRegistry(credentialsId: 'DOCKER_HUB', url: '') {
+			sh "docker run -d --name ${containerName} -p 3001:3000 andrdud/node${CUR_BRANCH}:${TAG}"}
                         }
                 }
             }
