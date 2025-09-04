@@ -50,7 +50,11 @@ pipeline {
                     {
                        sh(script: "docker container stop ${containerName}")
                     }
-                    sh(script: "docker container rm ${containerName}")
+                    def contExist = sh(script: "docker ps --filter name=^/${containerName}\$ --format '{{.Names}}'", returnStdout: true).trim()
+                    if (contExist == containerName)
+                    {
+                      sh(script: "docker container rm ${containerName}")
+                    }
                     if (CUR_BRANCH == main) {
                         sh "docker run -d --name ${containerName} -p 3000:3000 node${CUR_BRANCH}:${TAG}"
                     } else {
