@@ -45,16 +45,12 @@ pipeline {
             steps {
                 script {
                     def containerName = "node${CUR_BRANCH}"
-                    def containerStatus = sh(script: "docker ps -a --filter name=^/${containerName}\$ --format '{{.Names}}'", returnStdout: true).trim()
-                    if (containerStatus == containerName)
-                    {
-                       sh(script: "docker container stop ${containerName}")
-                    }
-                    def containerStoped = sh(script: "docker ps --filter name=^/${containerName}\$ --format '{{.Names}}'", returnStdout: true).trim()
-                    if (containerStoped == containerName)
-                    {
-                       sh(script: "docker container rm ${containerName}")
-                    }
+            def containerStatus = sh(script: "docker ps -a --filter name=^/${containerName}\$ --format '{{.Names}}'", returnStdout: true).trim()
+            
+            if (containerStatus == containerName) {
+                sh "docker container stop ${containerName} || true"
+                sh "docker container rm -f ${containerName}"
+            }
                     if (CUR_BRANCH == main) {
                         sh "docker run -d --name ${containerName} -p 3000:3000 node${CUR_BRANCH}:${TAG}"
                     } else {
