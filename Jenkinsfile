@@ -2,7 +2,7 @@
 pipeline {
     agent any
     triggers {
-        pollSCM('H/45 * * * *')
+        pollSCM('')
     }
     environment {
         CUR_BRANCH = "${env.BRANCH_NAME}"
