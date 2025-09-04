@@ -50,7 +50,7 @@ pipeline {
                sh "docker image ls"
             }
         }
-        stahe('Trivy docker image analyze'){
+        stage('Trivy docker image analyze'){
             agent {
                 docker {
                     image: 'aquasec/trivy:latest'
