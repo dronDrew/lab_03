@@ -2,7 +2,7 @@
 pipeline {
     agent any
     triggers {
-        pollSCM('H/5 * * * *')
+        pollSCM('H/45 * * * *')
     }
     environment {
         CUR_BRANCH = "${env.BRANCH_NAME}"
@@ -21,6 +21,17 @@ pipeline {
                         url: 'https://github.com/dronDrew/lab_03'
                     ]]
                 ])
+            }
+        }
+        stage('Hadollint') {
+            agent {
+                docker {
+                    image 'hadolint/hadolint:latest'
+                    args '-v ./Dockerfile:/Dockerfile'
+                }
+            }
+            steps {
+                sh 'hadolint /Dockerfile'
             }
         }
         stage('Build') {
