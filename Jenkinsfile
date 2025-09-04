@@ -24,10 +24,9 @@ pipeline {
     		  sh 'node --version'
                   sh 'chmod +x ./scripts/build.sh'
                   sh './scripts/test.sh'
-			}
+		  }
             	} 
             }
-        }
         stage('build docker image') {
             steps {
                echo "build image"
