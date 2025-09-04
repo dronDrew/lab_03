@@ -10,9 +10,18 @@ pipeline {
         TAG    = "v1.0"
     }
     stages {
-        stage('checkout') {
+        stage('Checkout') {
             steps {
-              checkout scmGit(branches: [[name: "${env.BRANCH_NAME}"]], browser: github('https://github.com/dronDrew/lab_03'), extensions: [localBranch("${env.BRANCH_NAME}")],  userRemoteConfigs: [[credentialsId: 'PAT',url: 'https://github.com/dronDrew/lab_03']])
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "*/${env.BRANCH_NAME}"]],
+                    doGenerateSubmoduleConfigurations: false, // Corrected typo
+                    extensions: [],
+                    userRemoteConfigs: [[
+                        credentialsId: 'PAT',
+                        url: 'https://github.com/dronDrew/lab_03'
+                    ]]
+                ])
             }
         }
        
@@ -44,19 +53,22 @@ pipeline {
         stage('deploy') {
             steps {
                 script {
-                    def containerName = "node${CUR_BRANCH}"
-                    def containerStatus = sh(script: "docker ps -a --filter name=${containerName} --format '{{.Names}}'", returnStdout: true).trim()
-                    
-                    if (containerStatus == containerName) {
-                        echo "Container '${containerName}' exists. Stopping and removing it."
-                        sh "docker container stop ${containerName} || true"
-                        sh "docker container rm -f ${containerName}"
-                    }
-                    if (CUR_BRANCH == 'main') {
-                        sh "docker run -d --name ${containerName} -p 3000:3000 node${CUR_BRANCH}:${TAG}"
-                    } else {
-                        sh "docker run -d --name ${containerName} -p 3001:3000 node${CUR_BRANCH}:${TAG}"
-                    }
+                        def containerName = "node${CUR_BRANCH}"
+                        def containerStatus = sh(script: "docker ps -a --filter name=^/${containerName}\$ --format '{{.Names}}'", returnStdout: true).trim()
+                        
+                        if (containerStatus == containerName) {
+                            echo "Container '${containerName}' exists. Stopping and removing it."
+                            sh "docker container stop ${containerName} || true"
+                            sh "docker container rm -f ${containerName}"
+                        } else {
+                            echo "Container '${containerName}' does not exist."
+                        }
+                        
+                        if (CUR_BRANCH == 'main') {
+                            sh "docker run -d --name ${containerName} -p 3000:3000 node${CUR_BRANCH}:${TAG}"
+                        } else {
+                            sh "docker run -d --name ${containerName} -p 3001:3000 node${CUR_BRANCH}:${TAG}"
+                        }
                 }
             }
         }
