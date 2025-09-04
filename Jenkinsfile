@@ -76,7 +76,6 @@ pipeline {
                         if (CUR_BRANCH == 'main') {
                             withDockerRegistry(credentialsId: 'DOCKER_HUB', url: 'https://app.docker.com/') {
 			sh "docker run -d --name ${containerName} -p 3000:3000 node${CUR_BRANCH}:${TAG}"}
-			}
                             
                         } else {
                              withDockerRegistry(credentialsId: 'DOCKER_HUB', url: 'https://app.docker.com/') {
