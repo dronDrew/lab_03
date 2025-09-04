@@ -1,4 +1,4 @@
-
+@Library('lab_lib@dev') _
 
 pipeline {
     agent any
@@ -64,10 +64,10 @@ pipeline {
             steps {
                 script {
                         if (CUR_BRANCH == 'main') {
-                           build job: 'Deploy_to_main', wait: false
+                           DeployToMain(conteinerName = "node${CUR_BRANCH}", port = "3000", tag = "${TAG}")
                             
                         } else {
-                            build job: 'Deploy_to_dev', wait: false 
+                           DeployToDev(conteinerName = "node${CUR_BRANCH}", port = "3000", tag = "${TAG}")
                         }
                 }
             }
