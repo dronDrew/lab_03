@@ -53,7 +53,7 @@ pipeline {
         stage('push to docker hub') {
             steps {
                 script {
-			withDockerRegistry(credentialsId: 'DOCKER_HUB', url: 'https://app.docker.com/') {
+			withDockerRegistry(credentialsId: 'DOCKER_HUB', url: 'https://app.docker.com/accounts/andrdud') {
 			sh "docker push node${CUR_BRANCH}:${TAG}"
 			}
                 }
