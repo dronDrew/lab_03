@@ -29,7 +29,7 @@ pipeline {
             }
         stage('build docker image') {
             steps {
-               echo "build image"
+               sh 'docker --help'
             }
         }
         stage('deploy') {
