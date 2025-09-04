@@ -26,12 +26,16 @@ pipeline {
         stage('Hadolint') {
     agent {
         docker {
-            image 'hadolint/hadolint:latest'
-            args '-v ${WORKSPACE}/Dockerfile:/Dockerfile'
+            image 'hadolint/hadolint:latest-debian'
         }
     }
     steps {
-        sh 'hadolint /Dockerfile'
+        sh 'hadolint ./Dockerfile | tee -a hadolint.txt'
+    }
+    post {
+        always {
+            archiveArtifacts 'hadolint.txt'
+        }
     }
 }
         stage('Build') {
