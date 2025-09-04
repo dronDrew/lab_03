@@ -1,8 +1,8 @@
-@Library('lab_lib@dev')
+@Library('lab_lib@dev') _
 pipeline {
     agent any
     triggers {
-        pollSCM('H/5 * * * *') // Poll SCM every 5 minutes; adjust as needed
+        pollSCM('H/5 * * * *')
     }
     environment {
         CUR_BRANCH = "${env.BRANCH_NAME}"
@@ -72,9 +72,9 @@ pipeline {
             steps {
                 script {
                     if (env.CUR_BRANCH == 'main') {
-                        DeployToMain(containerName: "node${CUR_BRANCH}", port: "3000", tag: "${TAG}")
+                        DeployToMain([containerName: "node${CUR_BRANCH}", port: "3000", tag: "${TAG}"])
                     } else {
-                        DeployToDev(containerName: "node${CUR_BRANCH}", port: "3001", tag: "${TAG}")
+                        DeployToDev([containerName: "node${CUR_BRANCH}", port: "3001", tag: "${TAG}"])
                     }
                 }
             }
