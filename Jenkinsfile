@@ -50,6 +50,15 @@ pipeline {
                sh "docker image ls"
             }
         }
+        stage('push to docker hub') {
+            steps {
+                script {
+			withDockerRegistry(credentialsId: 'DOCKER_HUB', url: 'https://app.docker.com/') {
+			sh "docker push node${CUR_BRANCH}:${TAG}"
+			}
+                }
+            }
+        }
         stage('deploy') {
             steps {
                 script {
@@ -65,9 +74,13 @@ pipeline {
                         }
                         
                         if (CUR_BRANCH == 'main') {
-                            sh "docker run -d --name ${containerName} -p 3000:3000 node${CUR_BRANCH}:${TAG}"
+                            withDockerRegistry(credentialsId: 'DOCKER_HUB', url: 'https://app.docker.com/') {
+			sh "docker run -d --name ${containerName} -p 3000:3000 node${CUR_BRANCH}:${TAG}"}
+			}
+                            
                         } else {
-                            sh "docker run -d --name ${containerName} -p 3001:3000 node${CUR_BRANCH}:${TAG}"
+                             withDockerRegistry(credentialsId: 'DOCKER_HUB', url: 'https://app.docker.com/') {
+			sh "docker run -d --name ${containerName} -p 3001:3000 node${CUR_BRANCH}:${TAG}"}
                         }
                 }
             }
