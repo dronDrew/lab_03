@@ -63,24 +63,11 @@ pipeline {
         stage('deploy') {
             steps {
                 script {
-                        def containerName = "node${CUR_BRANCH}"
-                        def containerStatus = sh(script: "docker ps -a --filter name=^/${containerName}\$ --format '{{.Names}}'", returnStdout: true).trim()
-                        
-                        if (containerStatus == containerName) {
-                            echo "Container '${containerName}' exists. Stopping and removing it."
-                            sh "docker container stop ${containerName} || true"
-                            sh "docker container rm -f ${containerName}"
-                        } else {
-                            echo "Container '${containerName}' does not exist."
-                        }
-                        
                         if (CUR_BRANCH == 'main') {
-                            withDockerRegistry(credentialsId: 'DOCKER_HUB', url: '') {
-			sh "docker run -d --name ${containerName} -p 3000:3000 andrdud/node${CUR_BRANCH}:${TAG}"}
+                           build job: 'Deploy_to_main', wait: false
                             
                         } else {
-                             withDockerRegistry(credentialsId: 'DOCKER_HUB', url: '') {
-			sh "docker run -d --name ${containerName} -p 3001:3000 andrdud/node${CUR_BRANCH}:${TAG}"}
+                            build job: 'Deploy_to_dev', wait: false 
                         }
                 }
             }
