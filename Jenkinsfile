@@ -2,6 +2,10 @@
 
 pipeline {
     agent any
+    environment {
+        CUR_BRANCH = "${env.BRANCH_NAME}"
+        TAG    = "v1.0"
+    }
     stages {
         stage('checkout') {
             steps {
@@ -29,7 +33,9 @@ pipeline {
             }
         stage('build docker image') {
             steps {
-               sh 'docker --help'
+               sh 'chmod +x ./Dockerfile'
+               sh "docker build -t node${CUR_BRANCH}:${TAG} ."
+               sh "docker image ls"
             }
         }
         stage('deploy') {
