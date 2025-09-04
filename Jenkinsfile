@@ -1,13 +1,12 @@
-@Library('lab_lib@dev') _
-
+@Library('lab_lib@dev')
 pipeline {
     agent any
     triggers {
-    	pollSCM('')
+        pollSCM('H/5 * * * *') // Poll SCM every 5 minutes; adjust as needed
     }
     environment {
         CUR_BRANCH = "${env.BRANCH_NAME}"
-        TAG    = "v1.0"
+        TAG = "v1.0"
     }
     stages {
         stage('Checkout') {
@@ -15,7 +14,7 @@ pipeline {
                 checkout([
                     $class: 'GitSCM',
                     branches: [[name: "*/${env.BRANCH_NAME}"]],
-                    doGenerateSubmoduleConfigurations: false, // Corrected typo
+                    doGenerateSubmoduleConfigurations: false,
                     extensions: [],
                     userRemoteConfigs: [[
                         credentialsId: 'PAT',
@@ -24,65 +23,61 @@ pipeline {
                 ])
             }
         }
-       
-        stage('build') {
+        stage('Build') {
             steps {
-              nodejs(cacheLocationStrategy: workspace(), nodeJSInstallationName: 'node') {
-    		sh 'node --version'
-                sh 'chmod +x ./scripts/build.sh'
-                sh './scripts/build.sh'
-		}
+                nodejs(nodeJSInstallationName: 'node') {
+                    sh 'node --version'
+                    sh 'chmod +x ./scripts/build.sh'
+                    sh './scripts/build.sh'
+                }
             }
         }
-        stage('test') {
+        stage('Test') {
             steps {
-                nodejs(cacheLocationStrategy: workspace(), nodeJSInstallationName: 'node') {
-    		  sh 'node --version'
-                  sh 'chmod +x ./scripts/build.sh'
-                  sh './scripts/test.sh'
-		  }
-            	} 
-            }
-        stage('build docker image') {
-            steps {
-               sh 'chmod +x ./Dockerfile'
-               sh "docker build -t node${CUR_BRANCH}:${TAG} ."
-               sh "docker image ls"
+                nodejs(nodeJSInstallationName: 'node') {
+                    sh 'node --version'
+                    sh 'chmod +x ./scripts/test.sh'
+                    sh './scripts/test.sh'
+                }
             }
         }
-        stage('Trivy docker image analyze'){
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t node${CUR_BRANCH}:${TAG} ."
+                sh 'docker image ls'
+            }
+        }
+        stage('Trivy Docker Image Analyze') {
             agent {
                 docker {
-                    image: 'aquasec/trivy:latest'
-                    args: '-v /var/run/docker.sock:var/run/docker.sock'
+                    image 'aquasec/trivy:latest'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
             steps {
-                sh "trivy image --exit-code 1 severity HIGHT,CRITICAL node${CUR_BRANCH}:${TAG}"
+                sh "trivy image --exit-code 1 --severity HIGH,CRITICAL node${CUR_BRANCH}:${TAG}"
             }
         }
-        stage('push to docker hub') {
+        stage('Push to Docker Hub') {
             steps {
                 script {
-			withDockerRegistry(credentialsId: 'DOCKER_HUB', url: '') {
-			sh "docker tag node${CUR_BRANCH}:${TAG} andrdud/node${CUR_BRANCH}:${TAG}"
-			sh "docker push andrdud/node${CUR_BRANCH}:${TAG}"
-			}
+                    withDockerRegistry(credentialsId: 'DOCKER_HUB', url: '') {
+                        sh "docker tag node${CUR_BRANCH}:${TAG} andrdud/node${CUR_BRANCH}:${TAG}"
+                        sh "docker push andrdud/node${CUR_BRANCH}:${TAG}"
+                    }
                 }
             }
         }
-        stage('deploy') {
+        stage('Deploy') {
             steps {
                 script {
-                        if (CUR_BRANCH == 'main') {
-                            DeployToMain(containerName: "node${CUR_BRANCH}", port: "3000", tag: "${TAG}")
-                        } else {
-                            DeployToDev(containerName: "node${CUR_BRANCH}", port: "3001", tag: "${TAG}")
-                        }
-                       }
-                  }
-          }
+                    if (env.CUR_BRANCH == 'main') {
+                        DeployToMain(containerName: "node${CUR_BRANCH}", port: "3000", tag: "${TAG}")
+                    } else {
+                        DeployToDev(containerName: "node${CUR_BRANCH}", port: "3001", tag: "${TAG}")
+                    }
+                }
+            }
+        }
     }
 }
-
-
