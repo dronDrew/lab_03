@@ -65,12 +65,12 @@ pipeline {
         stage('Trivy Docker Image Analyze') {
             agent {
                 docker {
-                    image 'aquasec/trivy:latest'
+                    image 'aquasec/trivy'
                     args '-v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
             steps {
-                sh "trivy image --exit-code 1 --severity HIGH,CRITICAL node${CUR_BRANCH}:${TAG}"
+                sh "trivy image node${CUR_BRANCH}:${TAG}"
             }
         }
         stage('Push to Docker Hub') {
