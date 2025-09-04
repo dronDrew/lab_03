@@ -52,9 +52,9 @@ pipeline {
                     }
                     sh(script: "docker container rm ${containerName}")
                     if (CUR_BRANCH == main) {
-                        sh(script: "docker run -d --name ${containerName}" -p 3000:3000 ${node${CUR_BRANCH}:${TAG}} )
+                        sh "docker run -d --name ${containerName} -p 3000:3000 node${CUR_BRANCH}:${TAG}"
                     } else {
-                        sh(script: "docker run -d --name ${containerName}" -p 3001:3000 ${node${CUR_BRANCH}:${TAG}
+                        sh "docker run -d --name ${containerName} -p 3001:3000 node${CUR_BRANCH}:${TAG}"
                     }
                 }
             }
