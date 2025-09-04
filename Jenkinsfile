@@ -50,6 +50,17 @@ pipeline {
                sh "docker image ls"
             }
         }
+        stahe('Trivy docker image analyze'){
+            agent {
+                docker {
+                    image: 'aquasec/trivy:latest'
+                    args: '-v /var/run/docker.sock:var/run/docker.sock'
+                }
+            }
+            steps {
+                sh "trivy image --exit-code 1 severity HIGHT,CRITICAL node${CUR_BRANCH}:${TAG}"
+            }
+        }
         stage('push to docker hub') {
             steps {
                 script {
@@ -64,14 +75,13 @@ pipeline {
             steps {
                 script {
                         if (CUR_BRANCH == 'main') {
-                           DeployToMain(conteinerName = "node${CUR_BRANCH}", port = "3000", tag = "${TAG}")
-                            
+                            DeployToMain(containerName: "node${CUR_BRANCH}", port: "3000", tag: "${TAG}")
                         } else {
-                           DeployToDev(conteinerName = "node${CUR_BRANCH}", port = "3000", tag = "${TAG}")
+                            DeployToDev(containerName: "node${CUR_BRANCH}", port: "3001", tag: "${TAG}")
                         }
-                }
-            }
-        }
+                       }
+                  }
+          }
     }
 }
 
