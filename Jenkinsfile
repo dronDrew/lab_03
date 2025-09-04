@@ -45,7 +45,7 @@ pipeline {
             steps {
                 script {
                     def containerName = "node${CUR_BRANCH}"
-                    def containerStatus = sh(script: "docker ps -a --filter name=^/${containerName}\$ --format '{{.Names}}'", returnStdout: true).trim()
+                    def containerStatus = sh(script: "docker ps -a --filter name=${containerName} --format '{{.Names}}'", returnStdout: true).trim()
                     
                     if (containerStatus == containerName) {
                         echo "Container '${containerName}' exists. Stopping and removing it."
