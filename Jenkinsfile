@@ -2,7 +2,7 @@
 pipeline {
     agent any
     triggers {
-        pollSCM('')
+        pollSCM('H/45 * * * *')
     }
     environment {
         CUR_BRANCH = "${env.BRANCH_NAME}"
@@ -23,17 +23,17 @@ pipeline {
                 ])
             }
         }
-        stage('Hadollint') {
-            agent {
-                docker {
-                    image 'hadolint/hadolint:latest'
-                    args '-v ./Dockerfile:/Dockerfile'
-                }
-            }
-            steps {
-                sh 'hadolint /Dockerfile'
-            }
+        stage('Hadolint') {
+    agent {
+        docker {
+            image 'hadolint/hadolint:latest'
+            args '-v ${WORKSPACE}/Dockerfile:/Dockerfile'
         }
+    }
+    steps {
+        sh 'hadolint /Dockerfile'
+    }
+}
         stage('Build') {
             steps {
                 nodejs(nodeJSInstallationName: 'node') {
