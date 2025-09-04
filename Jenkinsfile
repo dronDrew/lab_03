@@ -59,18 +59,17 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh "docker build -t node${CUR_BRANCH}:${TAG} ."
-                sh 'docker image ls'
             }
         }
         stage('Trivy Docker Image Analyze') {
             agent {
                 docker {
                     image 'aquasec/trivy'
-                    args '-v /var/run/docker.sock:/var/run/docker.sock'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock -v /var/jenkins_home/.trivy-cache:/root/.cache'
                 }
             }
             steps {
-                sh "trivy image node${CUR_BRANCH}:${TAG}"
+                sh "trivy image --exit-code 1 --severity HIGH,CRITICAL node${CUR_BRANCH}:${TAG}"
             }
         }
         stage('Push to Docker Hub') {
