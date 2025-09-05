@@ -85,18 +85,10 @@ pipeline {
                         -v ${WORKSPACE}:/output \
                         --group-add 999 \
                         aquasec/trivy:0.58.1 image \
-                        --format template \
-                        --template "@contrib/html.tpl" \
-                        -o /output/report.html \
                         --severity HIGH,CRITICAL \
                         node${CUR_BRANCH}:${TAG}
                    '''
             }
-            post {
-        always {
-            archiveArtifacts '/output/report.html'
-        }
-    }
         }
         stage('Push to Docker Hub') {
             steps {
