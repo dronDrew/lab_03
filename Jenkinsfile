@@ -80,6 +80,7 @@ pipeline {
                         -v /var/run/docker.sock:/var/run/docker.sock \
                         -v /var/jenkins_home/.trivy-cache:/root/.cache \
                         -v ${WORKSPACE}:/output \
+                        --group-add 999 \
                         aquasec/trivy:0.58.1 image \
                         --format template \
                         --template "@contrib/html.tpl" \
