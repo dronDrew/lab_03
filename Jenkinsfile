@@ -39,17 +39,11 @@ pipeline {
     }
 }
         stage('Build') {
-            agent {
-                docker {
-                    image 'node:7.8.0'
-                    args '-v var/jenkins_home:/var/jenkins_home'
-                }
-            }
             steps {
                 nodejs(nodeJSInstallationName: 'node') {
                     sh 'node --version'
-                    sh 'chmod +x /var/jenkins_home/scripts/build.sh'
-                    sh '/var/jenkins_home/scripts/build.sh'
+                    sh 'chmod +x ./scripts/build.sh'
+                    sh './scripts/build.sh'
                 }
             }
         }
