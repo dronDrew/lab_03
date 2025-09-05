@@ -94,7 +94,7 @@ pipeline {
             }
             post {
         always {
-            archiveArtifacts 'report.html'
+            archiveArtifacts '/output/report.html'
         }
     }
         }
