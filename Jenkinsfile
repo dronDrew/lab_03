@@ -69,6 +69,7 @@ pipeline {
                 }
             }
             steps {
+                sh 'chmod +x ./Dockerfile'
                 sh "docker build -t node${CUR_BRANCH}:${TAG} ."
             }
         }
