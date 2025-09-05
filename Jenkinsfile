@@ -65,9 +65,12 @@ pipeline {
             agent {
                 docker {
                     image 'docker:24.0'
-                    args '-v /var/run/docker.sock:/var/run/docker.sock'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock --group-add 999'
                 }
             }
+            environment {
+        	HOME = '/tmp'
+    	    }
             steps {
                 sh 'chmod +x ./Dockerfile'
                 sh "docker build -t node${CUR_BRANCH}:${TAG} ."
