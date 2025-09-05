@@ -75,8 +75,13 @@ pipeline {
         }
         stage('Trivy Docker Image Analyze') {
             steps {
-                sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v /var/jenkins_home/.trivy-cache:/root/.cache aquasec/trivy image --severity HIGH,CRITICAL node${CUR_BRANCH}:${TAG}"
+                sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v /var/jenkins_home/.trivy-cache:/root/.cache aquasec/trivy image --format template --template "@contrib/html.tpl" -o report.html --severity HIGH,CRITICAL node${CUR_BRANCH}:${TAG}"
             }
+            post {
+        always {
+            archiveArtifacts 'report.html'
+        }
+    }
         }
         stage('Push to Docker Hub') {
             steps {
